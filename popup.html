@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Ghost Job Detector</title>
+<link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+
+    <header class="app__header">
+      <div class="brand">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.45"/>
+            <circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.8"/>
+            <circle cx="12" cy="12" r="1.6" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="brand__name">Ghost Job Detector</span>
+      </div>
+      <button id="settingsBtn" class="icon-btn" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" width="15" height="15">
+          <path fill="currentColor" d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm8.94 2.6-1.62-.5a7.4 7.4 0 0 0-.55-1.33l.9-1.44a.6.6 0 0 0-.08-.75l-1.27-1.27a.6.6 0 0 0-.75-.08l-1.44.9a7.4 7.4 0 0 0-1.33-.55l-.5-1.62a.6.6 0 0 0-.57-.42h-1.8a.6.6 0 0 0-.57.42l-.5 1.62a7.4 7.4 0 0 0-1.33.55l-1.44-.9a.6.6 0 0 0-.75.08L4.98 6.6a.6.6 0 0 0-.08.75l.9 1.44a7.4 7.4 0 0 0-.55 1.33l-1.62.5a.6.6 0 0 0-.42.57v1.8a.6.6 0 0 0 .42.57l1.62.5c.13.46.32.9.55 1.33l-.9 1.44a.6.6 0 0 0 .08.75l1.27 1.27a.6.6 0 0 0 .75.08l1.44-.9c.42.23.87.42 1.33.55l.5 1.62a.6.6 0 0 0 .57.42h1.8a.6.6 0 0 0 .57-.42l.5-1.62c.46-.13.9-.32 1.33-.55l1.44.9a.6.6 0 0 0 .75-.08l1.27-1.27a.6.6 0 0 0 .08-.75l-.9-1.44c.23-.42.42-.87.55-1.33l1.62-.5a.6.6 0 0 0 .42-.57v-1.8a.6.6 0 0 0-.42-.57Z"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Settings panel -->
+    <section id="settingsPanel" class="panel panel--settings hidden">
+      <label class="field-label" for="apiKeyInput">Anthropic API key (optional, for AI analysis)</label>
+      <input id="apiKeyInput" class="text-input" type="password" placeholder="sk-ant-..." autocomplete="off" />
+      <p class="hint">Stored only in your browser's local extension storage. Get a key at console.anthropic.com.</p>
+      <div class="settings-actions">
+        <button id="saveKeyBtn" class="btn btn--primary">Save</button>
+        <button id="clearKeyBtn" class="btn btn--ghost">Clear</button>
+      </div>
+    </section>
+
+    <!-- Not on a job page -->
+    <section id="emptyState" class="state hidden">
+      <p class="state__title">Open a LinkedIn job posting</p>
+      <p class="state__body">Navigate to a job listing on linkedin.com/jobs/view/... then reopen this popup.</p>
+    </section>
+
+    <!-- Loading -->
+    <section id="loadingState" class="state hidden">
+      <div class="scan-line"></div>
+      <p class="state__body">Scanning posting…</p>
+    </section>
+
+    <!-- Main result -->
+    <section id="resultState" class="hidden">
+
+      <div class="job-id">
+        <p id="jobTitle" class="job-id__title">—</p>
+        <p id="jobCompany" class="job-id__company">—</p>
+      </div>
+
+      <div class="score-row">
+        <div class="dial" id="dial">
+          <span id="scoreNumber" class="dial__number">0</span>
+          <span class="dial__max">/100</span>
+        </div>
+        <div class="score-copy">
+          <p id="scoreLevel" class="score-copy__level">Low risk</p>
+          <p id="scoreSummary" class="score-copy__summary">Heuristic ghost-job risk score</p>
+        </div>
+      </div>
+
+      <div class="stat-strip">
+        <div class="stat">
+          <span id="statAge" class="stat__value">—</span>
+          <span class="stat__label">days live</span>
+        </div>
+        <div class="stat">
+          <span id="statApplicants" class="stat__value">—</span>
+          <span class="stat__label">applicants</span>
+        </div>
+        <div class="stat">
+          <span id="statSalary" class="stat__value">—</span>
+          <span class="stat__label">salary listed</span>
+        </div>
+      </div>
+
+      <div id="flagList" class="flag-list"></div>
+
+      <div class="ai-section">
+        <button id="aiBtn" class="btn btn--outline btn--block">
+          <svg viewBox="0 0 24 24" width="13" height="13" class="btn__icon">
+            <path fill="currentColor" d="M12 2.5 13.8 9l6.5 1.8-6.5 1.8L12 19l-1.8-6.4L3.7 10.8 10.2 9 12 2.5Z"/>
+          </svg>
+          Run AI deep analysis
+        </button>
+        <div id="aiResult" class="ai-result hidden"></div>
+      </div>
+
+      <button id="rescanBtn" class="rescan-link" type="button">Refresh selected job</button>
+    </section>
+
+  </div>
+  <script src="scorer.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
