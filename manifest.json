@@ -3,7 +3,7 @@
   "name": "Ghost Job Detector",
   "version": "1.0.0",
   "description": "Scans LinkedIn job postings for ghost-job red flags, with optional AI deep analysis.",
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting", "sidePanel"],
   "host_permissions": [
     "https://linkedin.com/*",
     "https://www.linkedin.com/*",
@@ -12,6 +12,9 @@
   "action": {
     "default_popup": "popup.html",
     "default_title": "Ghost Job Detector"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
   },
   "content_scripts": [
     {

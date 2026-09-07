@@ -24,6 +24,38 @@ body {
   font-size: 13px;
 }
 
+body.expanded {
+  width: 760px;
+}
+
+body.side-panel {
+  width: auto;
+  min-width: 320px;
+}
+
+body.side-panel .app {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+body.side-panel #expandBtn { display: none; }
+body.side-panel { font-size: 17px; }
+body.side-panel .brand__name { font-size: 18px; }
+body.side-panel .state__title { font-size: 19px; }
+body.side-panel .state__body { font-size: 19px; }
+body.side-panel .job-id__title { font-size: 28px; }
+body.side-panel .job-id__company { font-size: 19px; }
+body.side-panel .score-copy__level { font-size: 22px; }
+body.side-panel .score-copy__summary { font-size: 19px; }
+body.side-panel .stat__value { font-size: 28px; }
+body.side-panel .stat__label { font-size: 14px; }
+body.side-panel .flag__label { font-size: 17px; }
+body.side-panel .flag__detail { font-size: 19px; }
+body.side-panel .hint { font-size: 16px; }
+body.side-panel .field-label { font-size: 16px; }
+body.side-panel .btn { font-size: 16px; }
+body.side-panel .rescan-link { font-size: 15px; }
+
 .hidden { display: none !important; }
 
 .app { padding: 14px 16px 16px; }
@@ -35,6 +67,8 @@ body {
   justify-content: space-between;
   margin-bottom: 14px;
 }
+
+.header-actions { display: flex; align-items: center; gap: 2px; }
 
 .brand { display: flex; align-items: center; gap: 8px; }
 .brand__mark { color: var(--teal); display: flex; }
@@ -133,6 +167,9 @@ body {
   margin: 0 0 2px;
   line-height: 1.35;
 }
+
+body.expanded .job-id__title { font-size: 18px; }
+body.expanded .job-id__company { font-size: 13px; }
 .job-id__company { color: var(--muted); font-size: 12px; margin: 0; }
 
 /* Score */
@@ -146,6 +183,9 @@ body {
   padding: 12px 14px;
   margin-bottom: 12px;
 }
+
+body.expanded .score-row { padding: 16px 18px; }
+body.expanded .score-copy__summary { max-width: 520px; }
 
 .dial {
   width: 62px;
@@ -181,6 +221,9 @@ body {
   overflow: hidden;
   margin-bottom: 14px;
 }
+
+body.expanded .stat__value { font-size: 18px; }
+body.expanded .stat__label { font-size: 11px; }
 .stat {
   flex: 1;
   text-align: center;
@@ -222,6 +265,9 @@ body {
 .flag__body { flex: 1; }
 .flag__label { font-size: 12px; font-weight: 500; margin: 0 0 2px; line-height: 1.35; }
 .flag__detail { font-size: 11px; color: var(--muted); margin: 0; line-height: 1.4; }
+body.expanded .flag { padding: 10px 0; }
+body.expanded .flag__label { font-size: 13px; }
+body.expanded .flag__detail { font-size: 12px; }
 .flag--neutral .flag__label { color: var(--muted); font-weight: 400; }
 
 .no-flags {

@@ -4,6 +4,7 @@ const AI_MODEL = "claude-sonnet-5";
 
 const els = {
   settingsBtn: document.getElementById("settingsBtn"),
+  expandBtn: document.getElementById("expandBtn"),
   settingsPanel: document.getElementById("settingsPanel"),
   apiKeyInput: document.getElementById("apiKeyInput"),
   saveKeyBtn: document.getElementById("saveKeyBtn"),
@@ -183,6 +184,8 @@ async function scanActiveTab(waitForPreview = false) {
   }
 }
 
+globalThis.scanActiveTab = scanActiveTab;
+
 async function loadApiKey() {
   const { anthropicApiKey } = await chrome.storage.local.get("anthropicApiKey");
   return anthropicApiKey || "";
@@ -258,6 +261,20 @@ async function runAiAnalysis() {
 // --- Settings wiring ---
 els.settingsBtn.addEventListener("click", () => {
   els.settingsPanel.classList.toggle("hidden");
+});
+
+els.expandBtn.addEventListener("click", () => {
+  if (chrome.sidePanel && chrome.sidePanel.open) {
+    chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
+      if (tab && tab.windowId != null) chrome.sidePanel.open({ windowId: tab.windowId });
+    });
+    return;
+  }
+
+  const expanded = document.body.classList.toggle("expanded");
+  els.expandBtn.setAttribute("aria-pressed", String(expanded));
+  els.expandBtn.title = expanded ? "Collapse panel" : "Expand panel";
+  els.expandBtn.setAttribute("aria-label", expanded ? "Collapse panel" : "Expand panel");
 });
 
 loadApiKey().then((key) => {
