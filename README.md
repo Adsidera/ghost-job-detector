@@ -1,8 +1,7 @@
 # Ghost Job Detector
 
 A Chrome extension that scans LinkedIn job postings for signals of "ghost jobs"
-(listings that aren't actively being hired for), plus an optional AI deep-analysis
-pass using your own Anthropic API key.
+(listings that aren't actively being hired for).
 
 ## Install (unpacked)
 
@@ -20,21 +19,6 @@ pass using your own Anthropic API key.
    - A 0–100 heuristic risk score with a level (low / medium / high)
    - Posting age, applicant count, and whether a salary is listed
    - A breakdown of exactly which red flags were triggered and why
-
-## Optional: AI deep analysis
-
-Click the gear icon and paste an Anthropic API key (get one at
-[console.anthropic.com](https://console.anthropic.com)). It's stored only in
-your browser's local extension storage — never sent anywhere except directly
-to Anthropic's API when you click "Run AI deep analysis."
-
-The AI pass reads the job title, company, posting stats, and description, and
-gives a short plain-language read that's more nuanced than the fixed heuristic
-rules (e.g. it can notice a description that's internally inconsistent, or
-reads like a template, in ways fixed rules can't).
-
-Costs: each analysis is one small API call (a few cents at most on
-Claude Sonnet, using your own API key/billing).
 
 ## What the heuristic score checks
 

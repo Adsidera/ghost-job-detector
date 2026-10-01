@@ -125,6 +125,10 @@ function extractApplicantCount(raw) {
   return null;
 }
 
+function extractApplicantCountIsMinimum(raw) {
+  return !!raw && /(?:over|more than)\s+\d[\d,]*\+?\s+people\s+clicked\s+apply/i.test(raw);
+}
+
 function extractPostedDaysAgo(raw) {
   if (!raw) return null;
   const italianMatch = raw.match(
@@ -282,6 +286,13 @@ function scrapeJob(currentJobIdOverride) {
   const applicantCountFromContext = extractApplicantCount(text(selectedJobContext));
   const applicantCountFromMetadata = extractApplicantCount(selectedMetadataText);
   const applicantCountFromCard = extractApplicantCount(text(activeResult));
+  const applicantText = [
+    text(applicantEl),
+    text(selectedJobContext),
+    selectedMetadataText,
+    text(activeResult),
+    visibleJobText
+  ].filter(Boolean).join(" ");
   const applicantCount =
     applicantCountFromElement != null
       ? applicantCountFromElement
@@ -314,6 +325,7 @@ function scrapeJob(currentJobIdOverride) {
     reposted: postedInfo ? !!postedInfo.reposted : false,
     promoted,
     applicantCount,
+    applicantCountIsMinimum: extractApplicantCountIsMinimum(applicantText),
     hasSalary,
     urgentFlag,
     workplaceType: text(workplaceTypeEl),

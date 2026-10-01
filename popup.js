@@ -1,14 +1,7 @@
 const LEVEL_COLOR = { low: "var(--teal)", medium: "var(--amber)", high: "var(--red)" };
 const LEVEL_LABEL = { low: "Low risk", medium: "Medium risk", high: "High risk" };
-const AI_MODEL = "claude-sonnet-5";
-
 const els = {
-  settingsBtn: document.getElementById("settingsBtn"),
   expandBtn: document.getElementById("expandBtn"),
-  settingsPanel: document.getElementById("settingsPanel"),
-  apiKeyInput: document.getElementById("apiKeyInput"),
-  saveKeyBtn: document.getElementById("saveKeyBtn"),
-  clearKeyBtn: document.getElementById("clearKeyBtn"),
   emptyState: document.getElementById("emptyState"),
   loadingState: document.getElementById("loadingState"),
   resultState: document.getElementById("resultState"),
@@ -22,8 +15,6 @@ const els = {
   statApplicants: document.getElementById("statApplicants"),
   statSalary: document.getElementById("statSalary"),
   flagList: document.getElementById("flagList"),
-  aiBtn: document.getElementById("aiBtn"),
-  aiResult: document.getElementById("aiResult"),
   rescanBtn: document.getElementById("rescanBtn")
 };
 
@@ -109,7 +100,9 @@ function render(job, result) {
         : "stat__value--low"
     );
   }
-  els.statApplicants.textContent = job.applicantCount != null ? job.applicantCount : "—";
+  els.statApplicants.textContent = job.applicantCount != null
+    ? `${job.applicantCount}${job.applicantCountIsMinimum ? "+" : ""}`
+    : "—";
   els.statApplicants.classList.remove("stat__value--low", "stat__value--medium", "stat__value--high");
   if (job.applicantCount != null) {
     els.statApplicants.classList.add(
@@ -123,8 +116,6 @@ function render(job, result) {
   els.statSalary.textContent = job.hasSalary ? "Yes" : "No";
 
   renderFlags(result.flags);
-  els.aiResult.classList.add("hidden");
-  els.aiResult.textContent = "";
 
   showState("resultState");
 }
@@ -186,83 +177,6 @@ async function scanActiveTab(waitForPreview = false) {
 
 globalThis.scanActiveTab = scanActiveTab;
 
-async function loadApiKey() {
-  const { anthropicApiKey } = await chrome.storage.local.get("anthropicApiKey");
-  return anthropicApiKey || "";
-}
-
-function buildAiPrompt(job) {
-  return `You are helping a job seeker assess whether a LinkedIn posting is likely a "ghost job" (a listing that isn't actively being hired for). Here is the scraped posting data:
-
-Title: ${job.title || "unknown"}
-Company: ${job.company || "unknown"}
-Posted: ${job.postedDaysAgo != null ? job.postedDaysAgo + " days ago" : "unknown"}${job.reposted ? " (marked reposted)" : ""}
-Promoted listing: ${job.promoted ? "yes" : "no"}
-Applicant count: ${job.applicantCount != null ? job.applicantCount : "unknown"}
-Salary listed: ${job.hasSalary ? "yes" : "no"}
-Workplace type: ${job.workplaceType || "unknown"}
-"Urgently hiring" language present: ${job.urgentFlag ? "yes" : "no"}
-
-Job description (may be truncated):
-${job.description ? job.description.slice(0, 3000) : "not available"}
-
-In under 120 words: give a plain-language read on how likely this is to be a real, actively-filled role versus a ghost/pipeline posting, and name the 1-2 strongest signals either way. Be direct and specific to this posting, not generic advice.`;
-}
-
-async function runAiAnalysis() {
-  if (!currentJob) return;
-  const apiKey = await loadApiKey();
-  if (!apiKey) {
-    els.settingsPanel.classList.remove("hidden");
-    els.apiKeyInput.focus();
-    return;
-  }
-
-  els.aiBtn.disabled = true;
-  els.aiBtn.textContent = "Analyzing…";
-  els.aiResult.classList.remove("hidden");
-  els.aiResult.classList.remove("ai-result--error");
-  els.aiResult.textContent = "Contacting Claude…";
-
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: AI_MODEL,
-        max_tokens: 400,
-        messages: [{ role: "user", content: buildAiPrompt(currentJob) }]
-      })
-    });
-
-    if (!res.ok) {
-      const errBody = await res.text();
-      throw new Error(`API error ${res.status}: ${errBody.slice(0, 200)}`);
-    }
-
-    const data = await res.json();
-    const textBlock = (data.content || []).find((b) => b.type === "text");
-    els.aiResult.textContent = textBlock ? textBlock.text.trim() : "No response text returned.";
-  } catch (err) {
-    els.aiResult.classList.add("ai-result--error");
-    els.aiResult.textContent = "Couldn't complete AI analysis: " + err.message;
-  } finally {
-    els.aiBtn.disabled = false;
-    els.aiBtn.innerHTML =
-      '<svg viewBox="0 0 24 24" width="13" height="13" class="btn__icon"><path fill="currentColor" d="M12 2.5 13.8 9l6.5 1.8-6.5 1.8L12 19l-1.8-6.4L3.7 10.8 10.2 9 12 2.5Z"/></svg> Run AI deep analysis';
-  }
-}
-
-// --- Settings wiring ---
-els.settingsBtn.addEventListener("click", () => {
-  els.settingsPanel.classList.toggle("hidden");
-});
-
 els.expandBtn.addEventListener("click", () => {
   if (chrome.sidePanel && chrome.sidePanel.open) {
     chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
@@ -277,22 +191,6 @@ els.expandBtn.addEventListener("click", () => {
   els.expandBtn.setAttribute("aria-label", expanded ? "Collapse panel" : "Expand panel");
 });
 
-loadApiKey().then((key) => {
-  if (key) els.apiKeyInput.value = key;
-});
-
-els.saveKeyBtn.addEventListener("click", async () => {
-  const val = els.apiKeyInput.value.trim();
-  await chrome.storage.local.set({ anthropicApiKey: val });
-  els.settingsPanel.classList.add("hidden");
-});
-
-els.clearKeyBtn.addEventListener("click", async () => {
-  await chrome.storage.local.remove("anthropicApiKey");
-  els.apiKeyInput.value = "";
-});
-
-els.aiBtn.addEventListener("click", runAiAnalysis);
 els.rescanBtn.addEventListener("click", () => scanActiveTab(true));
 
 scanActiveTab();

@@ -6,8 +6,7 @@
   "permissions": ["storage", "activeTab", "scripting", "sidePanel"],
   "host_permissions": [
     "https://linkedin.com/*",
-    "https://www.linkedin.com/*",
-    "https://api.anthropic.com/*"
+    "https://www.linkedin.com/*"
   ],
   "action": {
     "default_popup": "popup.html",

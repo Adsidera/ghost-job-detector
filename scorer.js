@@ -67,11 +67,13 @@ function scoreJob(job) {
   // --- Applicant count vs age ---
   if (job.applicantCount != null && job.postedDaysAgo != null && job.postedDaysAgo > 0) {
     const rate = job.applicantCount / job.postedDaysAgo;
-    if (job.applicantCount > 200 && job.postedDaysAgo > 21) {
+    const highApplicantVolume =
+      job.applicantCount > 100 || (job.applicantCount === 100 && job.applicantCountIsMinimum);
+    if (highApplicantVolume && job.postedDaysAgo > 21) {
       score += 15;
       flags.push({
         weight: 15,
-        label: `${job.applicantCount} applicants, still open after ${job.postedDaysAgo} days`,
+        label: `${job.applicantCount}${job.applicantCountIsMinimum ? "+" : ""} applicants, still open after ${job.postedDaysAgo} days`,
         detail: "A large applicant pool with no closure suggests the role isn't moving toward a hire."
       });
     } else if (rate < 0.5 && job.postedDaysAgo > 14) {
