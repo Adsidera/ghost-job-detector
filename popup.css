@@ -193,13 +193,17 @@ body.expanded .score-copy__summary { max-width: 520px; }
   border-radius: 50%;
   border: 3px solid var(--teal);
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  gap: 2px;
   flex-shrink: 0;
+  box-sizing: border-box;
   font-family: var(--mono);
+  line-height: 1;
 }
 .dial__number { font-size: 19px; font-weight: 700; }
-.dial__max { font-size: 9px; color: var(--muted); margin-left: 1px; }
+.dial__max { font-size: 9px; color: var(--muted); }
 
 .score-copy__level {
   font-size: 14px;

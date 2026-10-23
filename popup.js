@@ -180,7 +180,9 @@ globalThis.scanActiveTab = scanActiveTab;
 els.expandBtn.addEventListener("click", () => {
   if (chrome.sidePanel && chrome.sidePanel.open) {
     chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
-      if (tab && tab.windowId != null) chrome.sidePanel.open({ windowId: tab.windowId });
+      if (tab && tab.windowId != null) {
+        chrome.sidePanel.open({ windowId: tab.windowId }).then(() => window.close());
+      }
     });
     return;
   }
